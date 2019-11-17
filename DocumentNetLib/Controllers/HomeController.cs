@@ -15,19 +15,23 @@ namespace DocumentNetLib.Controllers
         public ActionResult Index()
         {
             //string docPath = @"TestTemplate.docx";
-            string templatePath = @"TestTemplate.docx";
+            //string templatePath = @"TestTemplate.docx";
+            DocumentCore doc = mng.createTemplate();
+            mng.SaveDocumentAs(doc, @"TemplateFromMetod.docx");
+
             //mng.CreateDocument(docPath);
-            DocumentCore document = mng.LoadDocument(templatePath);
+            DocumentCore document = mng.LoadDocument(@"TemplateFromMetod.docx");
             if (document != null)
             {
-                User user = new User { FirstName = "John", LastName = "Smit", Guid = "12" };             
+                User user = new User { FirstName = "John", LastName = "Smit", Guid = "12" };
                 DocumentCore updatedDocument = mng.ChangeDocument(document, user);
                 string newDocName = "UserTemplate" + user.Guid + ".docx";
                 mng.SaveDocumentAs(document, newDocName);
-                System.Diagnostics.Process.Start(templatePath);
+                System.Diagnostics.Process.Start(@"TemplateFromMetod.docx");
                 System.Diagnostics.Process.Start(newDocName);
             }
 
+            System.Diagnostics.Process.Start(@"TemplateFromMetod.docx");
             return View();
         }
 

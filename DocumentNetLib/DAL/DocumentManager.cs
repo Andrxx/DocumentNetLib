@@ -122,8 +122,80 @@ namespace DocumentNetLib.DAL
             {
                 item.Replace(table.Content);
             }
+            return document;
+        }
+        
+        /// <summary>
+        /// метод тестировки - содание шаблона
+        /// </summary>
+        /// <returns></returns>
+        public DocumentCore createTemplate()
+        {
+            DocumentCore document = new DocumentCore();
+
+            // Add new section.
+            Section section = new Section(document);
+            document.Sections.Add(section);
+
+            // Let's set page size A4.
+            section.PageSetup.PaperType = PaperType.A4;
+
+            // Add two paragraphs using different ways:
+            // Way 1: Add 1st paragraph.
+            Paragraph par1 = new Paragraph(document);
+            par1.ParagraphFormat.Alignment = HorizontalAlignment.Left;
+            section.Blocks.Add(par1);
+
+            // Let's create a characterformat for text in the 1st paragraph.
+            CharacterFormat cf = new CharacterFormat() { FontName = "Times New Roman", Size = 14, FontColor = Color.Black };
+
+            Run text1 = new Run(document, "Приветствую {user}!");
+            text1.CharacterFormat = cf;
+            par1.Inlines.Add(text1);
+
+            // Let's add a line break into our paragraph.
+            par1.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
+            par1.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
+
+            Paragraph par2 = new Paragraph(document);
+            par2.ParagraphFormat.Alignment = HorizontalAlignment.Center;
+            section.Blocks.Add(par2);
+            document.Content.End.Insert(@"Просто текст.", new CharacterFormat()
+            { FontName = "Times New Roman", Size = 14, FontColor = Color.Black});
+            par2.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
+
+            Paragraph par3 = new Paragraph(document);
+            par3.ParagraphFormat.Alignment = HorizontalAlignment.Left;
+            section.Blocks.Add(par3);
+            document.Content.End.Insert(@"Lorem Ipsum - это текст-рыба, часто используемый в печати и вэб-дизайне. Lorem Ipsum " +
+                "является стандартной рыбой для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию" +
+                " размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, " +
+                "но и перешагнул в электронный дизайн. Его популяризации в новое время послужили публикация листов Letraset с образцами Lorem Ipsum в 60-х годах и, " +
+                "в более недавнее время, программы электронной вёрстки типа Aldus PageMaker, в шаблонах которых используется Lorem Ipsum.", 
+                new CharacterFormat() { FontName = "Times New Roman", Size = 14, FontColor = Color.Black });
+
+            Paragraph par4 = new Paragraph(document);
+            par4.ParagraphFormat.Alignment = HorizontalAlignment.Left;
+            section.Blocks.Add(par4);
+            document.Content.End.Insert(@"{user}									{date}",
+                new CharacterFormat() { FontName = "Times New Roman", Size = 14, FontColor = Color.Black });
+            par4.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
+
+            Paragraph par5 = new Paragraph(document);
+            par5.ParagraphFormat.Alignment = HorizontalAlignment.Center;
+            section.Blocks.Add(par5);
+            document.Content.End.Insert(@"Здесь будет заголовок таблицы.",
+                new CharacterFormat() { FontName = "Times New Roman", Size = 14, FontColor = Color.Black });
+            par5.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
+
+            Paragraph par6 = new Paragraph(document);
+            par6.ParagraphFormat.Alignment = HorizontalAlignment.Left;
+            section.Blocks.Add(par6);
+            document.Content.End.Insert(@"{table}",
+                new CharacterFormat() { FontName = "Times New Roman", Size = 14, FontColor = Color.Black });
+            par6.Inlines.Add(new SpecialCharacter(document, SpecialCharacterType.LineBreak));
 
             return document;
-        }        
+        }
     }
 }
