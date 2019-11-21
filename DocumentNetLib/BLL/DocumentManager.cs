@@ -17,18 +17,16 @@ namespace DocumentNetLib.DAL
         /// </summary>
         /// <param name="docPath"></param>
         /// <returns></returns>
-        public bool CreateDocument(string docPath)
+        public DocumentCore CreateDocument(string docPath)
         {
             try
             { 
                 DocumentCore document = new DocumentCore();
-                document.Save(docPath);
-                //System.Diagnostics.Process.Start(docPath);
-                return true;
+                return document;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return null;
             }
         }
 
@@ -70,61 +68,58 @@ namespace DocumentNetLib.DAL
         }
 
         /// <summary>
-        /// Добавлет в документ данные пользователя и дату
+        /// Изменяет в документе текст текстовые данные в соответствии с паттерном, переданном в словаре
         /// </summary>
         /// <param name="document"></param>
-        /// <param name="user"></param>
+        /// <param name="values"></param>
         /// <returns></returns>
-        public DocumentCore ChangeDocument (DocumentCore document, User user)
+        public DocumentCore ChangeStringData (DocumentCore document, Dictionary<string, string> values)
         {
-            Regex userRegex = new Regex(@"{user}", RegexOptions.IgnoreCase);
-            Regex dateRegex = new Regex(@"{date}", RegexOptions.IgnoreCase);
             Regex tableRegex = new Regex(@"{table}", RegexOptions.IgnoreCase);
-            foreach (ContentRange item in document.Content.Find(userRegex).Reverse())
+            RegexOptions options =  RegexOptions.IgnoreCase;
+            foreach (KeyValuePair<string, string> pair in values)
             {
-                item.Replace(user.FirstName + " " + user.LastName);
-            }
+                Regex regex = new Regex(pair.Key, options);
+                foreach (ContentRange item in document.Content.Find(pair.Key).Reverse())
+                {
+                    item.Replace(pair.Value);
+                }
+            }           
+            return document;
+        }
 
-            foreach (ContentRange item in document.Content.Find(dateRegex).Reverse())
-            {
-                item.Replace(DateTime.Today.ToString());
-            }
-
-
-            //пока костыль дл таблицы
+        /// <summary>
+        /// Добавляет в документ таблицу,
+        /// </summary>
+        /// <param name="document">DocumentCore</param>
+        /// <param name="patternName">имя паттерна для подмены в документе</param>
+        /// <param name="row">количество строк</param>
+        /// <param name="col">количество столбцов</param>
+        /// <returns></returns>
+        public DocumentCore AddTable(DocumentCore document, string patternName, int row, int col)
+        {
+           
             TableCell NewCell(int rowIndex, int colIndex)
             {
                 TableCell cell = new TableCell(document);
 
                 cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.Single, Color.Black, 1);
-
-                if (colIndex % 2 == 1 && rowIndex % 2 == 0 || colIndex % 2 == 0 && rowIndex % 2 == 1)
-                {
-                    cell.CellFormat.BackgroundColor = Color.Black;
-                }
-
                 Run run = new Run(document, string.Format("Row - {0}; Col - {1}", rowIndex, colIndex));
                 run.CharacterFormat.FontColor = Color.Auto;
-
                 cell.Blocks.Content.Replace(run.Content);
-
                 return cell;
             }
 
-            Table table = new Table(document, 5, 5, NewCell);
+            Table table = new Table(document, row, col, NewCell);
 
-            // Place the 'Table' at the start of the 'Document'.
-            // By the way, we didn't create a 'Section' in our document.
-            // As we're using 'Content' property, a 'Section' will be created automatically if necessary.
-            
-
-            foreach (ContentRange item in document.Content.Find(tableRegex).Reverse())
+            foreach (ContentRange item in document.Content.Find(patternName).Reverse())
             {
                 item.Replace(table.Content);
             }
+
             return document;
         }
-        
+
         /// <summary>
         /// метод тестировки - содание шаблона
         /// </summary>

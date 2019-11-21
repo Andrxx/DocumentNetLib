@@ -14,24 +14,37 @@ namespace DocumentNetLib.Controllers
         DocumentManager mng = new DocumentManager();
         public ActionResult Index()
         {
-            //string docPath = @"TestTemplate.docx";
+            string docPath = @"TestTemplate.docx";
+            //string testDoc = @"NewDoc.docx";
             //string templatePath = @"TestTemplate.docx";
-            DocumentCore doc = mng.createTemplate();
-            mng.SaveDocumentAs(doc, @"TemplateFromMetod.docx");
-
-            //mng.CreateDocument(docPath);
-            DocumentCore document = mng.LoadDocument(@"TemplateFromMetod.docx");
+            //DocumentCore document = mng.CreateDocument(testDoc);
+            DocumentCore document = mng.LoadDocument(docPath);
             if (document != null)
             {
                 User user = new User { FirstName = "John", LastName = "Smit", Guid = "12" };
-                DocumentCore updatedDocument = mng.ChangeDocument(document, user);
+                Dictionary<string, string> dictionary = new Dictionary<string, string>();
+                dictionary.Add("{user}", user.FirstName + " " + user.LastName);
+                dictionary.Add("{date}", DateTime.Today.Date.ToString("d"));
+                dictionary.Add("{val21}", "21");
+                dictionary.Add("{val31}", "31");
+                dictionary.Add("{val41}", "41");
+                dictionary.Add("{val51}", "51");
+                dictionary.Add("{val61}", "61");
+                dictionary.Add("{val22}", "22");
+                dictionary.Add("{val32}", "32");
+                dictionary.Add("{val42}", "42");
+                dictionary.Add("{val52}", "52");
+                dictionary.Add("{val62}", "62");
+
+                DocumentCore updatedDocument = mng.ChangeStringData(document, dictionary);
+                updatedDocument = mng.AddTable(updatedDocument, "{table}", 5, 5);
                 string newDocName = "UserTemplate" + user.Guid + ".docx";
                 mng.SaveDocumentAs(document, newDocName);
-                System.Diagnostics.Process.Start(@"TemplateFromMetod.docx");
+                System.Diagnostics.Process.Start(docPath);
                 System.Diagnostics.Process.Start(newDocName);
             }
 
-            System.Diagnostics.Process.Start(@"TemplateFromMetod.docx");
+
             return View();
         }
 
