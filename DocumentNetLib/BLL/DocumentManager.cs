@@ -73,7 +73,7 @@ namespace DocumentNetLib.DAL
         /// <param name="document"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        public DocumentCore ChangeStringData (DocumentCore document, Dictionary<string, string> values)
+        public DocumentCore ReplaceText (DocumentCore document, Dictionary<string, string> values)
         {
             Regex tableRegex = new Regex(@"{table}", RegexOptions.IgnoreCase);
             RegexOptions options =  RegexOptions.IgnoreCase;
@@ -96,7 +96,7 @@ namespace DocumentNetLib.DAL
         /// <param name="row">количество строк</param>
         /// <param name="col">количество столбцов</param>
         /// <returns></returns>
-        public DocumentCore AddTable(DocumentCore document, string patternName, int row, int col)
+        public DocumentCore AddTable(DocumentCore document, string patternName, int row, int col, Dictionary<int, string> dataArray)
         {
            
             TableCell NewCell(int rowIndex, int colIndex)
@@ -104,11 +104,24 @@ namespace DocumentNetLib.DAL
                 TableCell cell = new TableCell(document);
 
                 cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.Single, Color.Black, 1);
-                Run run = new Run(document, string.Format("Row - {0}; Col - {1}", rowIndex, colIndex));
+                //Run run = new Run(document, string.Format("Row - {0}; Col - {1}", rowIndex, colIndex));
+                Run run = new Run(document);
                 run.CharacterFormat.FontColor = Color.Auto;
+                if (dataArray != null)
+                {
+                    try
+                    {
+                        int key = int.Parse(rowIndex.ToString() + colIndex.ToString());
+                        run.Text = dataArray[key];
+                    }
+                    catch { }
+                }
+                
                 cell.Blocks.Content.Replace(run.Content);
                 return cell;
             }
+
+            
 
             Table table = new Table(document, row, col, NewCell);
 

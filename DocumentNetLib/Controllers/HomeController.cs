@@ -36,8 +36,25 @@ namespace DocumentNetLib.Controllers
                 dictionary.Add("{val52}", "52");
                 dictionary.Add("{val62}", "62");
 
-                DocumentCore updatedDocument = mng.ChangeStringData(document, dictionary);
-                updatedDocument = mng.AddTable(updatedDocument, "{table}", 5, 5);
+                Dictionary<int, string> tableDictionary = new Dictionary<int, string>();
+                tableDictionary.Add(00, "колонка1");
+                tableDictionary.Add(01, "колонка2");
+                tableDictionary.Add(02, "колонка3");
+                tableDictionary.Add(03, "колонка4");
+                tableDictionary.Add(04, "колонка5");
+                tableDictionary.Add(10, "ряд1");
+                tableDictionary.Add(11, "7");
+                tableDictionary.Add(12, "8");
+                tableDictionary.Add(13, "9");
+                tableDictionary.Add(14, "10");
+                tableDictionary.Add(20, "ряд2");
+                tableDictionary.Add(21, "12");
+                tableDictionary.Add(22, "13");
+                tableDictionary.Add(23, "14");
+                tableDictionary.Add(24, "15");
+
+                DocumentCore updatedDocument = mng.ReplaceText(document, dictionary);
+                updatedDocument = mng.AddTable(updatedDocument, "{table}", 3, 5, tableDictionary);
                 string newDocName = "UserTemplate" + user.Guid + ".docx";
                 mng.SaveDocumentAs(document, newDocName);
                 System.Diagnostics.Process.Start(docPath);
